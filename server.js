@@ -37,9 +37,18 @@ app.use((err, req, res, next) => {
     res.status(status).json({error: err.message || 'Server error'});
 });
 
-if (process.env.NODE_ENV !== 'test') {
-    const PORT = process.env.PORT || 8000;
-    app.listen(PORT, () => console.log('Server running on :${PORT}'));
+if (process.env.NODE_ENV !== "test") {
+    mongoose
+        .connect(process.env.MONGODB_URL)
+        .then(() => console.log("Database connected"))
+        .catch((err) => {
+            console.error("DB connection error:", err);
+            process.exit(1);
+        });
+
+    app.listen(process.env.PORT || 8000, () => {
+        console.log(`Server running on :${process.env.PORT || 8000}`);
+    });
 }
 
 module.exports = app;
